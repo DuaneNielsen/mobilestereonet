@@ -19,6 +19,7 @@ class DeepstreamPreProcessor(GstCommandPipeline):
             f'! nvvideoconvert '
             f'! m.sink_0 nvstreammux name=m batch-size=1 width={width} height={height} nvbuf-memory-type=2 '
             #f'! nvdspreprocess config-file=roll_classifier_prepro.txt enable=1 '
+            f'! nvinfer name=nvinfer config-file-path=checkpoints/MSNet2D/infer.txt '
             f'! nvvideoconvert '
             f'! nveglglessink'
         )
@@ -33,7 +34,7 @@ class DeepstreamPreProcessor(GstCommandPipeline):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--datapath', required=True, help='path to direectory containing frame_00001.png')
+    parser.add_argument('--datapath', required=True, help='path to directory containing frame_00001.png')
     args = parser.parse_args()
 
     # discover the height and width
@@ -43,8 +44,8 @@ if __name__ == '__main__':
     with DeepstreamPreProcessor(args.datapath, height, width) as pipeline:
         while not pipeline.is_done:
             time.sleep(1)
-            message = pipeline.bus.timed_pop_filtered(1000, Gst.MessageType.EOS)
-            if message is not None:
-               break
+            # message = pipeline.bus.timed_pop_filtered(10000, Gst.MessageType.EOS)
+            # if message is not None:
+            #    break
 
 
