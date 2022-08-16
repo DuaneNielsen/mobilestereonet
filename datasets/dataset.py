@@ -77,10 +77,11 @@ class SceneFlowDataset(Dataset):
 
 
 class KITTIDataset(Dataset):
-    def __init__(self, datapath, list_filename, training):
+    def __init__(self, datapath, list_filename, training, raw=False):
         self.datapath = datapath
         self.left_filenames, self.right_filenames, self.disp_filenames = self.load_path(list_filename)
         self.training = training
+        self.raw = raw
         if self.training:
             assert self.disp_filenames is not None
 
@@ -138,10 +139,13 @@ class KITTIDataset(Dataset):
         else:
             w, h = left_img.size
 
-            # normalize
-            processed = get_transform()
-            left_img = processed(left_img).numpy()
-            right_img = processed(right_img).numpy()
+            if not self.raw:
+                # normalize
+                processed = get_transform()
+                left_img = processed(left_img).numpy()
+                right_img = processed(right_img).numpy()
+            else:
+                left_img, right_img = np.array(left_img).transpose((2, 0, 1)), np.array(right_img).transpose((2, 0, 1))
 
             # pad to size 1248x384
             top_pad = 384 - h

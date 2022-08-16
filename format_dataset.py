@@ -3,7 +3,9 @@ from argparse import ArgumentParser
 from datasets import __datasets__
 from torch.utils.data import DataLoader
 import torch
-from torchvision.utils import save_image
+from tqdm import tqdm
+from PIL import Image
+import numpy as np
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -14,11 +16,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     StereoDataset = __datasets__[args.dataset]
-    test_dataset = StereoDataset(args.datapath, args.filelist, False)
+    test_dataset = StereoDataset(args.datapath, args.filelist, False, raw=True)
     TestImgLoader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False)
 
-    for batch_idx, sample in enumerate(TestImgLoader):
+    for batch_idx, sample in enumerate(tqdm(TestImgLoader)):
         left, right = sample['left'], sample['right']
-        image = torch.cat((left, right), dim=3)
-        save_image(image, f'{args.savepath}/frame_{batch_idx:05}.png')
+        image = torch.cat((left, right), axis=3)
+        im = Image.fromarray(image[0].numpy().transpose(1, 2, 0))
+        im.save(f'{args.savepath}/frame_{batch_idx:05}.png')
 

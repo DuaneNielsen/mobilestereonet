@@ -42,7 +42,7 @@ class DeepstreamPreProcessor(GstCommandPipeline):
         self.height, self.width = height, width
         super().__init__(
             f'multifilesrc location = {self.data_dir}/frame_%05d.png start-index={start_index} '
-            f'caps=image/png,framerate=(fraction)1/1 '
+            f'caps=image/png,framerate=(fraction)4/1 '
             f'! pngdec '
             f'! videoconvert '
             f'! videorate '
