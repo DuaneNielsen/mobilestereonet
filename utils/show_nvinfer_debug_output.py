@@ -12,7 +12,7 @@ def read_all_lines(filename):
         lines = [line.rstrip() for line in f.readlines()]
     return lines
 
-path = '/mnt/sdd2/home/duane/data/kitti2015'
+path = '/mnt/data/data/'
 
 lines = read_all_lines('../filenames/kitti15_train.txt')
 splits = [line.split() for line in lines]
